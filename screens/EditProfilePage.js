@@ -6,10 +6,10 @@ import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from '../config/firebase';
 import { user } from './RegisterPage';
 
-const ProfilePage = () => {
+const EditProfilePage = () => {
     const navigation = useNavigation();
-    const handleRegisterPage = () => {
-        navigation.navigate('Register');
+    const handleHomePage = () => {
+        navigation.navigate('Home');
     };
 
     const [name, setName] = useState('');
@@ -48,7 +48,7 @@ const ProfilePage = () => {
         
         <View style={styles.container}>
             <TouchableOpacity 
-                onPress={handleRegisterPage} style={styles.buttonBack}>
+                onPress={handleHomePage} style={styles.buttonBack}>
                 <ArrowLeftIcon size="20" color="black" />
             </TouchableOpacity>
             <TextInput
@@ -158,4 +158,4 @@ const styles = {
       },
 };
 
-export default ProfilePage;
+export default EditProfilePage;

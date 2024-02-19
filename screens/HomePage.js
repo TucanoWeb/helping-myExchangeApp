@@ -20,7 +20,7 @@ export default function HomePage() {
     };
     const handleEditProfile = async ()=>{
         // Navegar para a página de edição do perfil
-        await navigation.navigate('Profile');
+        await navigation.navigate('EditProfile');
     };
     
     return (
