@@ -32,9 +32,15 @@ const Footer = ({navigation}) => {
             <TouchableOpacity onPress={handleHomePage} style={footerStyles.footerItem}>
                 <Text style={footerStyles.footerText}>Home</Text>
             </TouchableOpacity>
+
+            <View style={footerStyles.divider} />
+
             <TouchableOpacity onPress={handleSearchPage} style={footerStyles.footerItem}>
                 <Text style={footerStyles.footerText}>Search</Text>
             </TouchableOpacity>
+
+            <View style={footerStyles.divider} />
+
             <TouchableOpacity onPress={handleFavoritesPage} style={footerStyles.footerItem}>
                 <Text style={footerStyles.footerText}>Favorites</Text>
             </TouchableOpacity>
@@ -62,6 +68,12 @@ const footerStyles = {
     footerText: {
         color: 'white',
         fontWeight: 'bold',
+    },
+    divider: {
+        width: 1,
+        height: '70%',
+        backgroundColor: 'white',
+        opacity: 0.6,
     },
 };
 

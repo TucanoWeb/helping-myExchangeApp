@@ -44,6 +44,14 @@ export default function HomePage() {
     const handleEditProfile = async ()=>{
         await navigation.navigate('EditProfile');
     };
+
+    const handleNavigateToSchool = async ()=>{
+        await navigation.navigate('School');
+    };
+
+    const handleNavigateToAirline = async ()=>{
+        await navigation.navigate('Airline');
+    };
     
     return (
       <SafeAreaView style={styles.container}>
@@ -59,8 +67,18 @@ export default function HomePage() {
         <Image source={require('../assets/flag.png')} style={styles.userCountry} />
         <Text style={styles.userCity}>{user.city}</Text>
         <Text style={styles.userArrivalDate}>Arrival Date: {user.arrivalDate}</Text>
-        <Text style={styles.userSchool}>School: {user.school}</Text>
-        <Text style={styles.userAirlines}>Airline: {user.airlines}</Text>
+        <View style={styles.schoolContainer}>
+            <Text style={styles.userSchool}>School: </Text>
+            <TouchableOpacity onPress={handleNavigateToSchool}>
+            <Text style={styles.linkText}>{user.school}</Text>
+            </TouchableOpacity>
+        </View>
+        <View style={styles.airlineContainer}>
+            <Text style={styles.userAirlines}>Airline: </Text>
+            <TouchableOpacity onPress={handleNavigateToAirline}>
+            <Text style={styles.linkText}>{user.airlines}</Text>
+            </TouchableOpacity>
+        </View>
         <View style={styles.separator2}></View>
         <Text style={styles.userOriginCity}>{user.originCity}</Text>
         <Text style={styles.userOriginCountry}>{user.originCountry}</Text>
@@ -88,9 +106,15 @@ const Footer = ({navigation}) => {
             <TouchableOpacity onPress={handleHomePage} style={footerStyles.footerItem}>
                 <Text style={footerStyles.footerText}>Home</Text>
             </TouchableOpacity>
+
+            <View style={footerStyles.divider} />
+
             <TouchableOpacity onPress={handleSearchPage} style={footerStyles.footerItem}>
                 <Text style={footerStyles.footerText}>Search</Text>
             </TouchableOpacity>
+
+            <View style={footerStyles.divider} />
+
             <TouchableOpacity onPress={handleFavoritesPage} style={footerStyles.footerItem}>
                 <Text style={footerStyles.footerText}>Favorites</Text>
             </TouchableOpacity>
@@ -174,19 +198,20 @@ const styles = {
         left: 150,
         color: 'black',
     },
-    userSchool: {
+    schoolContainer: {
         position: 'absolute',
+        flexDirection: 'row',
         marginTop: 580,
-        fontSize: 15,
         left: 150,
-        color: 'black',
     },
-    userAirlines: {
+    airlineContainer: {
         position: 'absolute',
+        flexDirection: 'row',
         marginTop: 605,
-        fontSize: 15,
         left: 150,
-        color: 'black',
+    },
+    linkText: {
+        fontWeight: 'bold',
     },
     separator2: {
         position: 'absolute',
@@ -238,5 +263,11 @@ const footerStyles = {
     footerText: {
         color: 'white',
         fontWeight: 'bold',
+    },
+    divider: {
+        width: 1,
+        height: '70%',
+        backgroundColor: 'white',
+        opacity: 0.6,
     },
 };
