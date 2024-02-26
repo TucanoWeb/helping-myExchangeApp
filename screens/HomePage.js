@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signOut } from 'firebase/auth';
 import { auth, db } from '../config/firebase';
@@ -52,6 +52,23 @@ export default function HomePage() {
     const handleNavigateToAirline = async ()=>{
         await navigation.navigate('Airline');
     };
+
+    const openWhatsAppChat = () => {
+        let phoneNumber = '+353 89 975 3246';
+        let message = 'Hello, I would like to chat with you on WhatsApp!';
+        let url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phoneNumber}`;
+    
+        Linking.canOpenURL(url)
+        .then((supported) => {
+            if (!supported) {
+                console.log("Can't handle url: " + url);
+            } else {
+                return Linking.openURL(url);
+            }
+        })
+        .catch((err) => console.error('An error occurred', err));
+    };
+    
     
     return (
       <SafeAreaView style={styles.container}>
@@ -82,7 +99,9 @@ export default function HomePage() {
         <View style={styles.separator2}></View>
         <Text style={styles.userOriginCity}>{user.originCity}</Text>
         <Text style={styles.userOriginCountry}>{user.originCountry}</Text>
-        <Image source={require('../assets/whatsapp.png')} style={styles.whatsappLogo} />
+        <TouchableOpacity onPress={openWhatsAppChat}>
+            <Image source={require('../assets/whatsapp.png')} style={styles.whatsappLogo} />
+        </TouchableOpacity>
         <Footer navigation={navigation} />
       </SafeAreaView>
     )
@@ -238,8 +257,8 @@ const styles = {
         position: 'absolute',
         width: 50,
         height: 50,
-        marginTop: 660,
-        left: 300,
+        marginTop: 620,
+        left: 100,
     },
 };
 
