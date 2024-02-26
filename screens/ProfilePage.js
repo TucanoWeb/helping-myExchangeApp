@@ -12,7 +12,6 @@ const ProfilePage = () => {
         navigation.navigate('Register');
     };
 
-    const [name, setName] = useState('');
     const [birthdate, setBirthdate] = useState('');
     const [destinationCity, setDestinationCity] = useState('');
     const [dateArrival, setDateArrival] = useState('');
@@ -25,7 +24,6 @@ const ProfilePage = () => {
     const saveProfile = async () => {
         try {
             await updateDoc(db, "users", {
-                Name: name,
                 Birthdate: birthdate,
                 Destination_city: destinationCity,
                 Date_arrival: dateArrival,
@@ -51,12 +49,6 @@ const ProfilePage = () => {
                 onPress={handleRegisterPage} style={styles.buttonBack}>
                 <ArrowLeftIcon size="20" color="black" />
             </TouchableOpacity>
-            <TextInput
-                style={styles.input}
-                placeholder="Name"
-                value={name}
-                onChangeText={setName}
-            />
             <TextInput
                 style={styles.input}
                 placeholder="Birthdate"

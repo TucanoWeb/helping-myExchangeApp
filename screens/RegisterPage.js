@@ -3,11 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../config/firebase';
 import { useNavigation } from '@react-navigation/native';
-import { doc, setDoc } from 'firebase/firestore';
+import { setDoc, doc } from '@react-native-firebase/firestore';
 
 export default function RegisterPage() {
   const navigation = useNavigation();
-  const [name, setName] = useState('')
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
