@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signOut } from 'firebase/auth';
 import { auth, db } from '../config/firebase';
 import { useNavigation } from '@react-navigation/native';
 import { doc, getDoc } from 'firebase/firestore';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function HomePage() {
     const navigation = useNavigation();
@@ -67,8 +69,30 @@ export default function HomePage() {
             }
         })
         .catch((err) => console.error('An error occurred', err));
-    };
+    }
+
+    const [liked, setLiked] = useState(false);
+    const [favorites, setFavorites] = useState([]);
+
+    useEffect(() => {
+        const loadFavorites = async () => {
+            const storedFavorites = await AsyncStorage.getItem('favorites');
+            if (storedFavorites) {
+                setFavorites(JSON.parse(storedFavorites));
+            };
+        }
+        loadFavorites();
+    }, []);
     
+    const toggleLike = async () => {
+        setLiked(!liked);
+            
+        const updatedFavorites = liked
+            ? favorites.filter((favorite) => favorite !== user.id)
+            : [...favorites, user];
+        setFavorites(updatedFavorites);
+        await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    };
     
     return (
       <SafeAreaView style={styles.container}>
@@ -79,6 +103,9 @@ export default function HomePage() {
             <Text style={styles.editButtonText}>MY PROFILE</Text>
         </TouchableOpacity>
         <Image source={require('../assets/profile.png')} style={styles.userPhoto} />
+        <TouchableOpacity style={styles.likeButton} onPress={toggleLike}>
+            <Icon name="heart" size={40} color={liked ? 'red' : 'grey'} />
+        </TouchableOpacity>
         <Text style={[styles.userName, styles.userAge]}>{user.name} - {user.age}</Text>
         <View style={styles.separator}></View>
         <Image source={require('../assets/flag.png')} style={styles.userCountry} />
@@ -189,6 +216,11 @@ const styles = {
         left: 30,
         color: 'black',
     },
+    likeButton: {
+        position: 'absolute',
+        marginTop: 470,
+        right: 30,
+      },
     separator: {
         position: 'absolute',
         width: 335,
@@ -257,8 +289,8 @@ const styles = {
         position: 'absolute',
         width: 50,
         height: 50,
-        marginTop: 620,
         left: 100,
+        marginTop: 600,
     },
 };
 

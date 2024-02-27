@@ -1,54 +1,64 @@
-import React, { useId, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore"; // Ensure 'doc' is imported
 import { db } from '../config/firebase';
-import { user } from './RegisterPage';
+import CountryPicker from 'react-native-country-picker-modal';
+import { launchImageLibrary } from 'react-native-image-picker';
+import DatePicker from '@react-native-community/datetimepicker'; // Ensure DatePicker is imported from the correct library
 
 const EditProfilePage = () => {
     const navigation = useNavigation();
-    const handleHomePage = () => {
-        navigation.navigate('Home');
-    };
 
     const [name, setName] = useState('');
-    const [birthdate, setBirthdate] = useState('');
+    const [birthdate, setBirthdate] = useState(new Date());
     const [destinationCity, setDestinationCity] = useState('');
     const [dateArrival, setDateArrival] = useState('');
     const [originCity, setOriginCity] = useState('');
+    const [countryCode, setCountryCode] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
     const [school, setSchool] = useState('');
     const [airlines, setAirlines] = useState('');
     const [photo, setPhoto] = useState('');
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
     const saveProfile = async () => {
         try {
-            await updateDoc(db, "users", {
+            await updateDoc(doc(db, "users", "yourUserId"), { // Replace "yourUserId" with the actual user ID
                 Name: name,
-                Birthdate: birthdate,
+                Birthdate: birthdate.toISOString(),
                 Destination_city: destinationCity,
                 Date_arrival: dateArrival,
                 Origin_city: originCity,
-                Whatsapp: whatsapp,
+                Whatsapp: `${countryCode}${whatsapp}`,
                 School: school,
                 Airlines: airlines,
                 Photo: photo,
             });
-            console.log('Profile saved!')
-            .then(() => {
-                navigation.navigate('Home');
-            });
+            console.log('Profile saved!');
+            navigation.navigate('Home');
         } catch (error) {
             console.error('Error saving profile:', error);
         }
     };
 
+    const handleChoosePhoto = () => {
+        launchImageLibrary({ noData: true }, response => {
+            if (response.assets) {
+                setPhoto(response.assets[0].uri);
+            }
+        });
+    };
+
+    const handleDateChange = (event, selectedDate) => {
+        setShowDatePicker(Platform.OS === 'ios');
+        setBirthdate(selectedDate || birthdate);
+    };
+
     return (
-        
         <View style={styles.container}>
-            <TouchableOpacity 
-                onPress={handleHomePage} style={styles.buttonBack}>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.buttonBack}>
                 <ArrowLeftIcon size="20" color="black" />
             </TouchableOpacity>
             <TextInput
@@ -57,12 +67,17 @@ const EditProfilePage = () => {
                 value={name}
                 onChangeText={setName}
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Birthdate"
-                value={birthdate}
-                onChangeText={setBirthdate}
-            />
+            <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
+                <Text>{birthdate instanceof Date ? birthdate.toDateString() : 'Select a date'}</Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+                <DatePicker
+                    value={birthdate}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={handleDateChange}
+                />
+            )}
             <TextInput
                 style={styles.input}
                 placeholder="Destination City"
@@ -81,12 +96,22 @@ const EditProfilePage = () => {
                 value={originCity}
                 onChangeText={setOriginCity}
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Whatsapp"
-                value={whatsapp}
-                onChangeText={setWhatsapp}
-            />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <CountryPicker
+                    onSelect={country => setCountryCode(country.cca2)}
+                    withFlag
+                    withCallingCodeButton
+                    withFilter
+                    withCallingCode
+                />
+                <TextInput
+                    style={[styles.input, { flexGrow: 1 }]}
+                    placeholder="Whatsapp"
+                    value={whatsapp}
+                    onChangeText={setWhatsapp}
+                    keyboardType="phone-pad"
+                />
+            </View>
             <TextInput
                 style={styles.input}
                 placeholder="School"
@@ -99,15 +124,12 @@ const EditProfilePage = () => {
                 value={airlines}
                 onChangeText={setAirlines}
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Upload your photo"
-                value={photo}
-                onChangeText={setPhoto}
-            />
+            <TouchableOpacity style={styles.input} onPress={handleChoosePhoto}>
+                <Text>{photo ? 'Photo Selected' : 'Upload your photo'}</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={saveProfile} style={styles.button}>
-        <Text style={styles.buttonText}>SAVE</Text>
-      </TouchableOpacity>
+                <Text style={styles.buttonText}>SAVE</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -125,8 +147,8 @@ const styles = {
         backgroundColor: 'white',
         borderRadius: 5,
         left: -140,
-        justifyContent: 'center', // Centraliza o texto verticalmente
-        alignItems: 'center', // Centraliza o texto horizontalmente
+        justifyContent: 'center',
+        alignItems: 'center',
         borderWidth: 1,
     },
     input: {
@@ -140,22 +162,22 @@ const styles = {
         paddingLeft: 10,
         fontSize: 15,
         backgroundColor: '#fff',
-      },
-      button: {
+    },
+    button: {
         top: 100,
         width: 110,
         height: 37,
         backgroundColor: '#2B8B5D',
         borderRadius: 5,
-        justifyContent: 'center', // Centraliza o texto verticalmente
-        alignItems: 'center', // Centraliza o texto horizontalmente
+        justifyContent: 'center',
+        alignItems: 'center',
         marginBottom: 20,
-      },
-      buttonText: {
+    },
+    buttonText: {
         fontSize: 20,
         color: '#fff',
         fontWeight: 'bold',
-      },
+    },
 };
 
 export default EditProfilePage;
