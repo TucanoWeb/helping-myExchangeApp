@@ -10,6 +10,8 @@ import ProfilePage from './screens/ProfilePage';
 import EditProfilePage from './screens/EditProfilePage';
 import SearchPage from './screens/SearchPage';
 import FavoritesPage from './screens/FavoritesPage';
+import UserHomePage from './screens/UserHomePage';
+import SchoolPage from './screens/SchoolPage';
 import useAuth from './hooks/useAuth';
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +26,8 @@ export default function AppNavigation() {
           <Stack.Screen name="EditProfile" options={{headerShown: false}} component={EditProfilePage} />
           <Stack.Screen name="Favorites" options={{headerShown: false}} component={FavoritesPage} />
           <Stack.Screen name="Search" options={{headerShown: false}} component={SearchPage} />
+          <Stack.Screen name="UserHome" options={{headerShown: false}} component={UserHomePage} />
+          <Stack.Screen name="School" options={{headerShown: false}} component={SchoolPage} />
         </Stack.Navigator>
       </NavigationContainer>
     )

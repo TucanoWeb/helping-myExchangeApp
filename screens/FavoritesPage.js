@@ -1,15 +1,82 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 const FavoritesPage = ({ navigation }) => {
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>FAVORITES</Text>
+      </View>
+      <UserSection />
+      <Footer navigation={navigation} />
+    </View>
+  );
+};
+
+const UserSection = () => {
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Favorites Page</Text>
-            {/* Add your favorite-related content here */}
-            <Footer navigation={navigation} />
-        </View>
+      <View style={styles.userSection}>
+        <Image
+          source={require('../assets/profile.png')} // Replace with your user icon image path
+          style={styles.userIcon}
+        />
+        <Text style={styles.userName}>Name</Text>
+        <TouchableOpacity>
+          <Image
+            source={require('../assets/flag.png')} // Replace with your add icon image path
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image
+            source={require('../assets/icon.png')} // Replace with your remove icon image path
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
     );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#30FFAE', // Adjust the color to match the provided image
+  },
+  header: {
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 70,
+    backgroundColor: '#30FFAE', // Adjust the color to match the provided image
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  userSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    padding: 20,
+    backgroundColor: '#30ff91', // Adjust the color to match the provided image
+  },
+  userIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  userName: {
+    fontSize: 18,
+    color: 'black',
+    flex: 1,
+    paddingHorizontal: 10,
+  },
+  icon: {
+    width: 30,
+    height: 30,
+  }
+});
 
 const Footer = ({navigation}) => {
     const handleHomePage = () => {

@@ -30,14 +30,16 @@ const SearchPage = ({ navigation }) => {
     };
 
     const renderUserItem = ({ item }) => (
-        <View style={styles.user}>
-            <Image source={item.image} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
-            <View>
-                <Text>{item.name}</Text>
-                <Text>Origin: {item.country}</Text>
-                <Text>Destination: {item.destination}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('UserHome', { userId: item.id })}>
+            <View style={styles.user}>
+                <Image source={item.image} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
+                <View>
+                    <Text>{item.name}</Text>
+                    <Text>Origem: {item.country}</Text>
+                    <Text>Destino: {item.destination}</Text>
+                </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     return (

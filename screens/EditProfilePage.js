@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
+import { TextInput, TouchableOpacity, Text, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
-import { doc, updateDoc } from "firebase/firestore"; // Ensure 'doc' is imported
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from '../config/firebase';
-import CountryPicker from 'react-native-country-picker-modal';
 import { launchImageLibrary } from 'react-native-image-picker';
-import DatePicker from '@react-native-community/datetimepicker'; // Ensure DatePicker is imported from the correct library
+import DatePicker from '@react-native-community/datetimepicker';
 
 const EditProfilePage = () => {
     const navigation = useNavigation();
@@ -16,22 +15,22 @@ const EditProfilePage = () => {
     const [destinationCity, setDestinationCity] = useState('');
     const [dateArrival, setDateArrival] = useState('');
     const [originCity, setOriginCity] = useState('');
-    const [countryCode, setCountryCode] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
     const [school, setSchool] = useState('');
     const [airlines, setAirlines] = useState('');
     const [photo, setPhoto] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showDatePickerArrival, setShowDatePickerArrival] = useState(false);
 
     const saveProfile = async () => {
         try {
-            await updateDoc(doc(db, "users", "yourUserId"), { // Replace "yourUserId" with the actual user ID
+            await updateDoc(doc(db, "users", "yourUserId"), {
                 Name: name,
                 Birthdate: birthdate.toISOString(),
                 Destination_city: destinationCity,
                 Date_arrival: dateArrival,
                 Origin_city: originCity,
-                Whatsapp: `${countryCode}${whatsapp}`,
+                Whatsapp: `${whatsapp}`,
                 School: school,
                 Airlines: airlines,
                 Photo: photo,
@@ -56,10 +55,19 @@ const EditProfilePage = () => {
         setBirthdate(selectedDate || birthdate);
     };
 
+    const handleDateArrivalChange = (event, selectedDate) => {
+        setShowDatePickerArrival(Platform.OS === 'ios');
+        setDateArrival(selectedDate || dateArrival);
+    };
+
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
+        <ScrollView contentContainerStyle={styles.contentContainer}>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.buttonBack}>
-                <ArrowLeftIcon size="20" color="black" />
+                <ArrowLeftIcon size="25" color="black" />
             </TouchableOpacity>
             <TextInput
                 style={styles.input}
@@ -67,8 +75,10 @@ const EditProfilePage = () => {
                 value={name}
                 onChangeText={setName}
             />
-            <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
-                <Text>{birthdate instanceof Date ? birthdate.toDateString() : 'Select a date'}</Text>
+            <TouchableOpacity style={[styles.input, styles.datePickerInput]} onPress={() => setShowDatePicker(true)}>
+                <Text style={[styles.dateText, { color: birthdate instanceof Date && birthdate.toDateString() !== new Date().toDateString() ? 'black' : '#A9A9A9' }]}>
+                        {birthdate instanceof Date && birthdate.toDateString() !== new Date().toDateString() ? birthdate.toDateString() : 'Birthdate'}
+                </Text>
             </TouchableOpacity>
             {showDatePicker && (
                 <DatePicker
@@ -84,34 +94,32 @@ const EditProfilePage = () => {
                 value={destinationCity}
                 onChangeText={setDestinationCity}
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Date Arrival"
-                value={dateArrival}
-                onChangeText={setDateArrival}
-            />
+            <TouchableOpacity style={[styles.input, styles.datePickerInput]} onPress={() => setShowDatePickerArrival(true)}>
+                <Text style={[styles.dateText, { color: dateArrival ? 'black' : '#A9A9A9' }]}>
+                    {dateArrival ? dateArrival.toDateString() : 'Date Arrival'}
+                </Text>
+            </TouchableOpacity>
+            {showDatePickerArrival && (
+                <DatePicker
+                    value={dateArrival || new Date()}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={handleDateArrivalChange}
+                />
+            )}
             <TextInput
                 style={styles.input}
                 placeholder="Origin City"
                 value={originCity}
                 onChangeText={setOriginCity}
             />
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <CountryPicker
-                    onSelect={country => setCountryCode(country.cca2)}
-                    withFlag
-                    withCallingCodeButton
-                    withFilter
-                    withCallingCode
-                />
-                <TextInput
-                    style={[styles.input, { flexGrow: 1 }]}
-                    placeholder="Whatsapp"
-                    value={whatsapp}
-                    onChangeText={setWhatsapp}
-                    keyboardType="phone-pad"
-                />
-            </View>
+            <TextInput
+                style={styles.whatsappInput}
+                placeholder="WhatsApp number"
+                value={whatsapp}
+                onChangeText={setWhatsapp}
+                keyboardType="phone-pad"
+            />
             <TextInput
                 style={styles.input}
                 placeholder="School"
@@ -124,59 +132,117 @@ const EditProfilePage = () => {
                 value={airlines}
                 onChangeText={setAirlines}
             />
-            <TouchableOpacity style={styles.input} onPress={handleChoosePhoto}>
-                <Text>{photo ? 'Photo Selected' : 'Upload your photo'}</Text>
-            </TouchableOpacity>
+            <TouchableOpacity style={styles.uploadButton} onPress={handleChoosePhoto}>
+            <Text style={styles.uploadButtonText}>{photo ? 'Photo Selected' : 'Upload your photo'}</Text>
+        </TouchableOpacity>
             <TouchableOpacity onPress={saveProfile} style={styles.button}>
                 <Text style={styles.buttonText}>SAVE</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = {
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor:'#30FFAE',
+    contentContainer: {
+        flexGrow: 1,
+        alignItems: 'center', // Alinha os filhos do ScrollView no centro do eixo transversal (horizontal)
+        justifyContent: 'center', // Justifica o conteúdo no centro do eixo principal (vertical)
+        backgroundColor: '#30FFAE',
+        padding: 20,
     },
     buttonBack: {
-        top: 50,
-        width: 40,
-        height: 30,
+        alignSelf: 'flex-start',
+        margin: 10,
         backgroundColor: 'white',
         borderRadius: 5,
-        left: -140,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
     },
     input: {
-        top: 90,
-        width: 328,
+        width: '100%',
         height: 43,
         borderColor: '#2B8B5D',
         borderWidth: 2,
         borderRadius: 5,
-        marginBottom: 20,
+        marginTop: 15,
         paddingLeft: 10,
         fontSize: 15,
         backgroundColor: '#fff',
     },
     button: {
-        top: 100,
-        width: 110,
+        width: '50%', // Button width is half of the container width
         height: 37,
         backgroundColor: '#2B8B5D',
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
+        marginTop: 15, // Add space above the button
     },
     buttonText: {
         fontSize: 20,
         color: '#fff',
         fontWeight: 'bold',
+    },
+    datePickerInput: {
+        justifyContent: 'center', // Center the text inside the input
+        height: 43, // Set the input height
+        marginTop: 15, // Add space between inputs
+    },
+    dateText: {
+    },
+    phoneSection: {
+        flexDirection: 'row',
+        width: '100%',
+        height: 43,
+        borderColor: '#2B8B5D',
+        borderWidth: 2,
+        borderRadius: 5,
+        marginTop: 15,
+        backgroundColor: '#fff',
+        paddingLeft: 10,
+    },
+    countryPickerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        backgroundColor: '#fff',
+        borderTopLeftRadius: 5,
+        borderBottomLeftRadius: 5,
+        flex: 1,
+        height: '100%',
+    },
+    countryCodeText: {
+        fontSize: 15,
+        marginLeft: 10,
+        color: 'black',
+    },
+    whatsappInput: {
+        width: '100%',
+        height: 43,
+        borderColor: '#2B8B5D',
+        borderWidth: 2,
+        borderRadius: 5,
+        marginTop: 15,
+        paddingLeft: 10,
+        fontSize: 15,
+        backgroundColor: '#fff',
+    },
+    uploadButton: {
+        width: '100%',
+        height: 43,
+        borderColor: '#2B8B5D',
+        borderWidth: 2,
+        borderRadius: 5,
+        marginTop: 15,
+        justifyContent: 'center', // Centraliza o texto verticalmente
+        backgroundColor: '#fff',
+    },
+    uploadButtonText: {
+        fontSize: 15,
+        color: '#A9A9A9',
+        paddingLeft: 10,
     },
 };
 

@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { doc, getDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-export default function HomePage() {
+export default function UserHomePage() {
     const navigation = useNavigation();
     /* const [name, setName] = useState('');
 
@@ -42,9 +42,6 @@ export default function HomePage() {
         airlines: 'KLM',
         originCity: 'Novo Hamburgo',
         originCountry: 'Brazil',
-    };
-    const handleEditProfile = async ()=>{
-        await navigation.navigate('EditProfile');
     };
 
     const handleNavigateToSchool = async ()=>{
@@ -96,13 +93,10 @@ export default function HomePage() {
     
     return (
       <SafeAreaView style={styles.container}>
-        <TouchableOpacity onPress={handleLogout} style={styles.logout}>
-            <Text style={styles.editButtonText}>LOGOUT</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
-            <Text style={styles.editButtonText}>MY PROFILE</Text>
-        </TouchableOpacity>
         <Image source={require('../assets/profile.png')} style={styles.userPhoto} />
+        <TouchableOpacity style={styles.likeButton} onPress={toggleLike}>
+            <Icon name="heart" size={40} color={liked ? 'red' : 'grey'} />
+        </TouchableOpacity>
         <Text style={[styles.userName, styles.userAge]}>{user.name} - {user.age}</Text>
         <View style={styles.separator}></View>
         <Image source={require('../assets/flag.png')} style={styles.userCountry} />
