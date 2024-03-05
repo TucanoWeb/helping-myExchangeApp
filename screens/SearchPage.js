@@ -138,6 +138,7 @@ const styles = {
         padding: 10,
         width: 350,
         borderRadius: 10,
+        backgroundColor: '#30ff91',
     },
 };
 
