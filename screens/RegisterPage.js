@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../config/firebase';
 import { useNavigation } from '@react-navigation/native';
 import { setDoc, doc } from '@react-native-firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 
 export default function RegisterPage() {
   const navigation = useNavigation();
@@ -13,23 +14,25 @@ export default function RegisterPage() {
 
   const handleRegister = async () => {
     if (email && password) {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        setDoc(doc(db, "users", user.uid), {
+      // try {
+        // const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // const user = userCredential.user;
+        await addDoc(collection(db, "users"), {
           Name: name,
           Email: email,
+          Password: password,
           CreatedAt: new Date().toUTCString(),
         })
         .then(() => {
+          console.log("Registrado");
           navigation.navigate('Home');
         })
         .catch((error) => {
           console.log("Error saving user data: ", error);
         });
-      } catch (error) {
-        console.log("Error creating user: ", error);
-      }
+      // } catch (error) {
+      //   console.log("Error creating user: ", error);
+      // }
     }
   }
 
