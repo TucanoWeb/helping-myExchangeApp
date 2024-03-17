@@ -4,64 +4,65 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../config/firebase';
 import { useNavigation } from '@react-navigation/native';
 import { setDoc, doc } from '@react-native-firebase/firestore';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 export default function RegisterPage() {
   const navigation = useNavigation();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const defaulFormData = {
+    name: "",
+    email: "",
+    password: ""
+  }
+
+  const [formData, setFormData] = useState(defaulFormData)
+
+
+  function onChangeForm(key, value) {
+    setFormData(prev => ({
+      ...prev,
+      [key]: value
+    }))
+  }
+
 
   const handleRegister = async () => {
-    if (email && password) {
-      // try {
-        // const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        // const user = userCredential.user;
-        await addDoc(collection(db, "users"), {
-          Name: name,
-          Email: email,
-          Password: password,
-          CreatedAt: new Date().toUTCString(),
-        })
-        .then(() => {
-          console.log("Registrado");
-          navigation.navigate('Home');
-        })
-        .catch((error) => {
-          console.log("Error saving user data: ", error);
-        });
-      // } catch (error) {
-      //   console.log("Error creating user: ", error);
-      // }
-    }
+    createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      .then((userCredential) => {
+        setFormData(defaulFormData)
+        navigation.navigate('EditProfile')
+      })
+      .catch((error) => {
+        console.log("Error register user: ", error.message)
+      })
   }
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>REGISTER</Text>
       <TextInput
         style={styles.input}
-        placeholder="Name"
-        value={name}
-        onChangeText={(text) => setName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
-          onChangeText={(text) => setEmail(text)}
-          keyboardType="email-address"
-        />
-        <TextInput
-          style={styles.input}
+        placeholder="E-mail"
+        value={formData.email}
+        onChangeText={e => onChangeForm("email", e)}
+        keyboardType="email-address"
+      />
+      <TextInput
+        style={styles.input}
+        value={formData.password}
         placeholder="Password"
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={e => onChangeForm("password", e)}
         secureTextEntry
       />
       <TouchableOpacity onPress={handleRegister} style={styles.button}>
         <Text style={styles.buttonText}>REGISTER</Text>
       </TouchableOpacity>
       <Text
-        onPress={() => navigation.navigate('Login')}
+        onPress={() => {
+          setFormData(defaulFormData)
+          navigation.navigate('Login')
+        }}
         style={styles.subtitle}>LOGIN</Text>
     </View>
   );

@@ -15,7 +15,7 @@ const SchoolPage = () => {
 
   const renderComment = ({ item }) => (
     <View style={styles.commentContainer}>
-      <Image source={require('../assets/profile.png')} style={styles.profilePic} />
+      <Image source={require('../../assets/profile.png')} style={styles.profilePic} />
       <View style={styles.commentText}>
         <Text style={styles.commentName}>{item.name}</Text>
         <Text>{item.comment}</Text>
@@ -32,31 +32,31 @@ const SchoolPage = () => {
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-      const loadFavorites = async () => {
-          const storedFavorites = await AsyncStorage.getItem('favorites');
-          if (storedFavorites) {
-              setFavorites(JSON.parse(storedFavorites));
-          };
-      }
-      loadFavorites();
+    const loadFavorites = async () => {
+      const storedFavorites = await AsyncStorage.getItem('favorites');
+      if (storedFavorites) {
+        setFavorites(JSON.parse(storedFavorites));
+      };
+    }
+    loadFavorites();
   }, []);
 
   const toggleLike = async () => {
     setLiked(!liked);
-        
+
     const updatedFavorites = liked
-        ? favorites.filter((favorite) => favorite !== user.id)
-        : [...favorites, user];
+      ? favorites.filter((favorite) => favorite !== user.id)
+      : [...favorites, user];
     setFavorites(updatedFavorites);
     await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/dorset.jpeg')} style={styles.userImage} />
+      <Image source={require('../../assets/dorset.jpeg')} style={styles.userImage} />
       <View style={styles.rsr}>
         <Text style={styles.rating}>4.5
-        <FontAwesome name="star" size={24} color="gold" /></Text>
+          <FontAwesome name="star" size={24} color="gold" /></Text>
         <Text style={styles.reviews}>273 Reviews</Text>
       </View>
       <Text style={styles.schoolTitle}>School</Text>
@@ -86,37 +86,37 @@ const SchoolPage = () => {
   );
 };
 
-const Footer = ({navigation}) => {
+const Footer = ({ navigation }) => {
   const handleHomePage = () => {
-      navigation.navigate('Home');
+    navigation.navigate('Home');
   };
 
   const handleSearchPage = () => {
-      navigation.navigate('Search');
+    navigation.navigate('Search');
   };
 
   const handleFavoritesPage = () => {
-      navigation.navigate('Favorites');
+    navigation.navigate('Favorites');
   };
 
   return (
-      <View style={footerStyles.container}>
-          <TouchableOpacity onPress={handleHomePage} style={footerStyles.footerItem}>
-              <Text style={footerStyles.footerText}>Home</Text>
-          </TouchableOpacity>
+    <View style={footerStyles.container}>
+      <TouchableOpacity onPress={handleHomePage} style={footerStyles.footerItem}>
+        <Text style={footerStyles.footerText}>Home</Text>
+      </TouchableOpacity>
 
-          <View style={footerStyles.divider} />
+      <View style={footerStyles.divider} />
 
-          <TouchableOpacity onPress={handleSearchPage} style={footerStyles.footerItem}>
-              <Text style={footerStyles.footerText}>Search</Text>
-          </TouchableOpacity>
+      <TouchableOpacity onPress={handleSearchPage} style={footerStyles.footerItem}>
+        <Text style={footerStyles.footerText}>Search</Text>
+      </TouchableOpacity>
 
-          <View style={footerStyles.divider} />
+      <View style={footerStyles.divider} />
 
-          <TouchableOpacity onPress={handleFavoritesPage} style={footerStyles.footerItem}>
-              <Text style={footerStyles.footerText}>Favorites</Text>
-          </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={handleFavoritesPage} style={footerStyles.footerItem}>
+        <Text style={footerStyles.footerText}>Favorites</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   commentContainer: {
-    position : 'relative',
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 20,
@@ -248,30 +248,30 @@ const styles = StyleSheet.create({
 
 const footerStyles = {
   container: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      backgroundColor: '#2b8b5d',
-      marginBottom: 0,
-      width: '100%',
-      height: 50,
-      position: 'absolute',
-      bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#2b8b5d',
+    marginBottom: 0,
+    width: '100%',
+    height: 50,
+    position: 'absolute',
+    bottom: 0,
   },
   footerItem: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   footerText: {
-      color: 'white',
-      fontWeight: 'bold',
+    color: 'white',
+    fontWeight: 'bold',
   },
   divider: {
-      width: 1,
-      height: '70%',
-      backgroundColor: 'white',
-      opacity: 0.6,
+    width: 1,
+    height: '70%',
+    backgroundColor: 'white',
+    opacity: 0.6,
   },
 };
 

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -30,8 +30,8 @@ export default function UserHomePage() {
         fetchName();
     }, []); */
 
-    const handleLogout = async ()=>{
-      await signOut(auth);
+    const handleLogout = async () => {
+        await signOut(auth);
     }
     const user = {
         name: "Vagner Pires",
@@ -44,11 +44,11 @@ export default function UserHomePage() {
         originCountry: 'Brazil',
     };
 
-    const handleNavigateToSchool = async ()=>{
+    const handleNavigateToSchool = async () => {
         await navigation.navigate('School');
     };
 
-    const handleNavigateToAirline = async ()=>{
+    const handleNavigateToAirline = async () => {
         await navigation.navigate('Airline');
     };
 
@@ -56,16 +56,16 @@ export default function UserHomePage() {
         let phoneNumber = '+353 89 975 3246';
         let message = 'Hello, I would like to chat with you on WhatsApp!';
         let url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phoneNumber}`;
-    
+
         Linking.canOpenURL(url)
-        .then((supported) => {
-            if (!supported) {
-                console.log("Can't handle url: " + url);
-            } else {
-                return Linking.openURL(url);
-            }
-        })
-        .catch((err) => console.error('An error occurred', err));
+            .then((supported) => {
+                if (!supported) {
+                    console.log("Can't handle url: " + url);
+                } else {
+                    return Linking.openURL(url);
+                }
+            })
+            .catch((err) => console.error('An error occurred', err));
     }
 
     const [liked, setLiked] = useState(false);
@@ -80,52 +80,52 @@ export default function UserHomePage() {
         }
         loadFavorites();
     }, []);
-    
+
     const toggleLike = async () => {
         setLiked(!liked);
-            
+
         const updatedFavorites = liked
             ? favorites.filter((favorite) => favorite !== user.id)
             : [...favorites, user];
         setFavorites(updatedFavorites);
         await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
     };
-    
+
     return (
-      <SafeAreaView style={styles.container}>
-        <Image source={require('../assets/profile.png')} style={styles.userPhoto} />
-        <TouchableOpacity style={styles.likeButton} onPress={toggleLike}>
-            <Icon name="heart" size={40} color={liked ? 'red' : 'grey'} />
-        </TouchableOpacity>
-        <Text style={[styles.userName, styles.userAge]}>{user.name} - {user.age}</Text>
-        <View style={styles.separator}></View>
-        <Image source={require('../assets/flag.png')} style={styles.userCountry} />
-        <Text style={styles.userCity}>{user.city}</Text>
-        <Text style={styles.userArrivalDate}>Arrival Date: {user.arrivalDate}</Text>
-        <View style={styles.schoolContainer}>
-            <Text style={styles.userSchool}>School: </Text>
-            <TouchableOpacity onPress={handleNavigateToSchool}>
-            <Text style={styles.linkText}>{user.school}</Text>
+        <SafeAreaView style={styles.container}>
+            <Image source={require('../../assets/profile.png')} style={styles.userPhoto} />
+            <TouchableOpacity style={styles.likeButton} onPress={toggleLike}>
+                <Icon name="heart" size={40} color={liked ? 'red' : 'grey'} />
             </TouchableOpacity>
-        </View>
-        <View style={styles.airlineContainer}>
-            <Text style={styles.userAirlines}>Airline: </Text>
-            <TouchableOpacity onPress={handleNavigateToAirline}>
-            <Text style={styles.linkText}>{user.airlines}</Text>
+            <Text style={[styles.userName, styles.userAge]}>{user.name} - {user.age}</Text>
+            <View style={styles.separator}></View>
+            <Image source={require('../../assets/flag.png')} style={styles.userCountry} />
+            <Text style={styles.userCity}>{user.city}</Text>
+            <Text style={styles.userArrivalDate}>Arrival Date: {user.arrivalDate}</Text>
+            <View style={styles.schoolContainer}>
+                <Text style={styles.userSchool}>School: </Text>
+                <TouchableOpacity onPress={handleNavigateToSchool}>
+                    <Text style={styles.linkText}>{user.school}</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.airlineContainer}>
+                <Text style={styles.userAirlines}>Airline: </Text>
+                <TouchableOpacity onPress={handleNavigateToAirline}>
+                    <Text style={styles.linkText}>{user.airlines}</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.separator2}></View>
+            <Text style={styles.userOriginCity}>{user.originCity}</Text>
+            <Text style={styles.userOriginCountry}>{user.originCountry}</Text>
+            <TouchableOpacity onPress={openWhatsAppChat}>
+                <Image source={require('../../assets/whatsapp.png')} style={styles.whatsappLogo} />
             </TouchableOpacity>
-        </View>
-        <View style={styles.separator2}></View>
-        <Text style={styles.userOriginCity}>{user.originCity}</Text>
-        <Text style={styles.userOriginCountry}>{user.originCountry}</Text>
-        <TouchableOpacity onPress={openWhatsAppChat}>
-            <Image source={require('../assets/whatsapp.png')} style={styles.whatsappLogo} />
-        </TouchableOpacity>
-        <Footer navigation={navigation} />
-      </SafeAreaView>
+            <Footer navigation={navigation} />
+        </SafeAreaView>
     )
 }
 
-const Footer = ({navigation}) => {
+const Footer = ({ navigation }) => {
     const handleHomePage = () => {
         navigation.navigate('Home');
     };
@@ -211,7 +211,7 @@ const styles = {
         position: 'absolute',
         marginTop: 470,
         right: 30,
-      },
+    },
     separator: {
         position: 'absolute',
         width: 335,
