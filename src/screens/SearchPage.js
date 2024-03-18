@@ -15,14 +15,14 @@ const SearchPage = ({ navigation }) => {
                 name: 'John Doe',
                 country: 'USA',
                 destination: 'Brazil',
-                image: require('../assets/profile.png'),
+                image: require('../../assets/profile.png'),
             },
             {
                 id: 2,
                 name: 'Jane Smith',
                 country: 'Canada',
                 destination: 'Spain',
-                image: require('../assets/profile.png'),
+                image: require('../../assets/profile.png'),
             },
             // Adicione mais resultados aqui
         ];
@@ -52,7 +52,7 @@ const SearchPage = ({ navigation }) => {
                     onChangeText={setSearchText}
                 />
                 <TouchableOpacity onPress={handleSearch}>
-                    <Image source={require('../assets/search.png')} style={styles.search} />
+                    <Image source={require('../../assets/search.png')} style={styles.search} />
                 </TouchableOpacity>
             </View>
             <FlatList
@@ -65,7 +65,7 @@ const SearchPage = ({ navigation }) => {
     );
 };
 
-const Footer = ({navigation}) => {
+const Footer = ({ navigation }) => {
     const handleHomePage = () => {
         // Navegar para a homepage
         navigation.navigate('Home');
@@ -106,7 +106,7 @@ const styles = {
     container: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor:'#30FFAE',
+        backgroundColor: '#30FFAE',
     },
     input: {
         top: 80,

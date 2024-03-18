@@ -9,7 +9,7 @@ const FavoritesPage = ({ navigation }) => {
       name: 'Alice Johnson',
       originCity: 'New York',
       destinationCity: 'Los Angeles',
-      image: require('../assets/profile.png'), // Substitua pelo caminho do ícone de perfil
+      image: require('../../assets/profile.png'), // Substitua pelo caminho do ícone de perfil
     },
     // Adicione mais usuários favoritos aqui
   ]);
@@ -93,69 +93,69 @@ const styles = StyleSheet.create({
   // Estilos adicionais conforme necessário
 });
 
-const Footer = ({navigation}) => {
+const Footer = ({ navigation }) => {
   const handleHomePage = () => {
-      // Navegar para a homepage
-      navigation.navigate('Home');
+    // Navegar para a homepage
+    navigation.navigate('Home');
   };
 
   const handleSearchPage = () => {
-      // Navegar para a página de busca
-      navigation.navigate('Search');
+    // Navegar para a página de busca
+    navigation.navigate('Search');
   };
 
   const handleFavoritesPage = () => {
-      // Navegar para a página de favoritos
-      navigation.navigate('Favorites');
+    // Navegar para a página de favoritos
+    navigation.navigate('Favorites');
   };
 
   return (
-      <View style={footerStyles.container}>
-          <TouchableOpacity onPress={handleHomePage} style={footerStyles.footerItem}>
-              <Text style={footerStyles.footerText}>Home</Text>
-          </TouchableOpacity>
+    <View style={footerStyles.container}>
+      <TouchableOpacity onPress={handleHomePage} style={footerStyles.footerItem}>
+        <Text style={footerStyles.footerText}>Home</Text>
+      </TouchableOpacity>
 
-          <View style={footerStyles.divider} />
+      <View style={footerStyles.divider} />
 
-          <TouchableOpacity onPress={handleSearchPage} style={footerStyles.footerItem}>
-              <Text style={footerStyles.footerText}>Search</Text>
-          </TouchableOpacity>
+      <TouchableOpacity onPress={handleSearchPage} style={footerStyles.footerItem}>
+        <Text style={footerStyles.footerText}>Search</Text>
+      </TouchableOpacity>
 
-          <View style={footerStyles.divider} />
+      <View style={footerStyles.divider} />
 
-          <TouchableOpacity onPress={handleFavoritesPage} style={footerStyles.footerItem}>
-              <Text style={footerStyles.footerText}>Favorites</Text>
-          </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={handleFavoritesPage} style={footerStyles.footerItem}>
+        <Text style={footerStyles.footerText}>Favorites</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const footerStyles = {
   container: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      backgroundColor: '#2b8b5d',
-      marginBottom: 0,
-      width: '100%',
-      height: 50,
-      position: 'absolute',
-      bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#2b8b5d',
+    marginBottom: 0,
+    width: '100%',
+    height: 50,
+    position: 'absolute',
+    bottom: 0,
   },
   footerItem: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   footerText: {
-      color: 'white',
-      fontWeight: 'bold',
+    color: 'white',
+    fontWeight: 'bold',
   },
   divider: {
-      width: 1,
-      height: '70%',
-      backgroundColor: 'white',
-      opacity: 0.6,
+    width: 1,
+    height: '70%',
+    backgroundColor: 'white',
+    opacity: 0.6,
   },
 };
 
@@ -180,19 +180,19 @@ const UserSection = () => {
     return (
       <View style={styles.userSection}>
         <Image
-          source={require('../assets/profile.png')} // Replace with your user icon image path
+          source={require('../../assets/profile.png')} // Replace with your user icon image path
           style={styles.userIcon}
         />
         <Text style={styles.userName}>Name</Text>
         <TouchableOpacity>
           <Image
-            source={require('../assets/flag.png')} // Replace with your add icon image path
+            source={require('../../assets/flag.png')} // Replace with your add icon image path
             style={styles.icon}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('../assets/icon.png')} // Replace with your remove icon image path
+            source={require('../../assets/icon.png')} // Replace with your remove icon image path
             style={styles.icon}
           />
         </TouchableOpacity>
