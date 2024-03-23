@@ -34,7 +34,7 @@ export default function UserHomePage() {
         await signOut(auth);
     }
     const user = {
-        name: "Vagner Pires",
+        name: "User2",
         age: 33,
         city: 'Dublin',
         arrivalDate: '01-07-2024',
@@ -281,7 +281,7 @@ const styles = {
         width: 50,
         height: 50,
         left: 100,
-        marginTop: 600,
+        marginTop: 630,
     },
 };
 

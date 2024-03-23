@@ -1,42 +1,54 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Image, FlatList, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { db } from '../config/firebase';
 
 const SearchPage = ({ navigation }) => {
     const [searchText, setSearchText] = useState('');
+    const [filterType, setFilterType] = useState('users'); // users, schools, airlines
     const [searchResults, setSearchResults] = useState([]);
 
-    const handleSearch = () => {
-        // Aqui você pode implementar a lógica de busca dos usuários com base no searchText
-        // e atualizar os resultados na variável searchResults
-        // Exemplo:
-        const results = [
-            {
-                id: 1,
-                name: 'John Doe',
-                country: 'USA',
-                destination: 'Brazil',
-                image: require('../../assets/profile.png'),
-            },
-            {
-                id: 2,
-                name: 'Jane Smith',
-                country: 'Canada',
-                destination: 'Spain',
-                image: require('../../assets/profile.png'),
-            },
-            // Adicione mais resultados aqui
-        ];
+    const handleSearch = async () => {
+        let query = db.collection(filterType);
+
+        if (filterType === 'users' && searchText !== '') {
+            query = query.where('Name', '==', searchText);
+            query = query.where('DateArrival', '==', searchText);
+            query = query.where('Origin City', '==', searchText);
+            query = query.where('Destination City', '==', searchText);
+        }
+
+        if (filterType === 'schools' && searchText !== '') {
+            query = query.where('School', '==', searchText);
+            query = query.where('City', '==', searchText);
+            query = query.where('Country', '==', searchText);
+        }
+        
+        if (filterType === 'airlines' && searchText !== '') {
+            query = query.where('Airline', '==', searchText);
+        }
+
+        const querySnapshot = await query.get();
+        const results = [];
+        querySnapshot.forEach(doc => {
+            const data = doc.data();
+            results.push({
+                id: doc.id,
+                ...data,
+            });
+        });
+
         setSearchResults(results);
     };
 
     const renderUserItem = ({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate('UserHome', { userId: item.id })}>
+        <TouchableOpacity onPress={() => navigation.navigate('UserDetail', { userId: item.id })}>
             <View style={styles.user}>
-                <Image source={item.image} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
+                <Image source={require('../../assets/profile.png')} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
                 <View>
-                    <Text>{item.name}</Text>
-                    <Text>Origem: {item.country}</Text>
-                    <Text>Destino: {item.destination}</Text>
+                    <Text>{item.Name}</Text>
+                    <Text>Origem: {item['Origin City']}</Text>
+                    <Text>Destino: {item['Destination City']}</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -44,16 +56,26 @@ const SearchPage = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.viewsearch}>
+            <View style={styles.searchBarContainer}>
                 <TextInput
                     style={styles.input}
-                    placeholder="Digite o nome do usuário"
+                    placeholder="Search..."
                     value={searchText}
                     onChangeText={setSearchText}
                 />
                 <TouchableOpacity onPress={handleSearch}>
-                    <Image source={require('../../assets/search.png')} style={styles.search} />
+                    <Image source={require('../../assets/search.png')} style={styles.searchIcon} />
                 </TouchableOpacity>
+            </View>
+            <View style={styles.pickerContainer}>
+                <Picker
+                    selectedValue={filterType}
+                    style={styles.pickerStyle}
+                    onValueChange={(itemValue) => setFilterType(itemValue)}>
+                    <Picker.Item label="Users" value="users" />
+                    <Picker.Item label="Schools" value="schools" />
+                    <Picker.Item label="Airlines" value="airlines" />
+                </Picker>
             </View>
             <FlatList
                 data={searchResults}
@@ -107,18 +129,41 @@ const styles = {
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#30FFAE',
+        paddingTop: 50, // Adicionado espaço no topo do contêiner
     },
-    input: {
-        top: 80,
-        width: 328,
-        height: 43,
-        borderColor: '#2B8B5D',
+    searchBarContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '90%', // Defina a largura com base no tamanho desejado
+    },
+    pickerContainer: {
+        width: '40%', // Alinha a largura do picker com a barra de busca
+        marginTop: 10, // Adiciona um espaço entre a barra de busca e o picker
+    },
+    pickerStyle: {
+        width: '100%', // Faz o picker ocupar toda a largura do contêiner
+        height: 50,
+        backgroundColor: '#fff',
+        borderColor: 'black',
         borderWidth: 2,
         borderRadius: 5,
-        marginBottom: 100,
-        paddingLeft: 10,
+    },
+    input: {
+        flex: 1, // O input ocupa todo o espaço exceto o necessário para o ícone de busca
+        height: 50,
+        borderColor: '#2B8B5D',
+        borderWidth: 2,
+        borderRadius: 15,
+        paddingLeft: 15,
+        paddingRight: 50, // Adicionado espaço no final do input para o texto não sobrepor o ícone de busca
         fontSize: 15,
         backgroundColor: '#fff',
+        marginRight: 10, // Espaço entre o input e o ícone de busca
+    },
+    searchIcon: {
+        width: 30,
+        height: 30,
+        marginLeft: -50, // Posiciona o ícone de busca sobre o input
     },
     search: {
         width: 20,

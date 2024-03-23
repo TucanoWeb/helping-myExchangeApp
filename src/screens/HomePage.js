@@ -268,7 +268,7 @@ const styles = {
         width: 50,
         height: 50,
         left: 100,
-        marginTop: 600,
+        marginTop: 630,
     },
 };
 
