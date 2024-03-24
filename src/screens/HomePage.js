@@ -89,12 +89,11 @@ export default function HomePage() {
             <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
                 <Text style={styles.editButtonText}>MY PROFILE</Text>
             </TouchableOpacity>
-            {/* {userData && userData.photo ? (
+            {userData && userData.photo ? (
             <Image source={{ uri: userData.photo }} style={styles.userPhoto} />
                 ) : (
                 <Image source={require('../../assets/profile.png')} style={styles.userPhoto} />
-                )} */}
-            <Image source={require('../../assets/profile.png')} style={styles.userPhoto} />
+                )}
             <Text style={[styles.userName, styles.userAge]}>{userData?.name} - {userData?.age}</Text>
             <View style={styles.separator}></View>
             <Image source={require('../../assets/flag.png')} style={styles.userCountry} />
