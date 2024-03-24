@@ -10,20 +10,49 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function HomePage() {
     const navigation = useNavigation();
+    const [userData, setUserData] = useState(null);
 
     const handleLogout = async () => {
         await signOut(auth);
     }
-    const user = {
-        name: "Vagner Pires",
-        age: 33,
-        city: 'Dublin',
-        arrivalDate: '01-07-2024',
-        school: 'Dorset College',
-        airlines: 'KLM',
-        originCity: 'Novo Hamburgo',
-        originCountry: 'Brazil',
-    };
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                const userDoc = docSnap.data();
+                setUserData({
+                    name: userDoc.Name,
+                    age: calculateAge(userDoc.Birthdate),
+                    city: userDoc.Destination_city,
+                    country: userDoc.Destination_country,
+                    arrivalDate: new Date(userDoc.Date_arrival.toDate()).toLocaleDateString(),
+                    school: userDoc.School,
+                    airlines: userDoc.Airlines,
+                    originCity: userDoc.Origin_city,
+                    originCountry: userDoc.Origin_country,
+                    photo: userDoc.Photo,
+                });
+            } else {
+                console.log("No such document!");
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    function calculateAge(birthdate) {
+        const birthDate = new Date(birthdate);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      }
+
     const handleEditProfile = () => {
         navigation.navigate('EditProfile');
     };
@@ -52,29 +81,6 @@ export default function HomePage() {
             .catch((err) => console.error('An error occurred', err));
     }
 
-    const [liked, setLiked] = useState(false);
-    const [favorites, setFavorites] = useState([]);
-
-    useEffect(() => {
-        const loadFavorites = async () => {
-            const storedFavorites = await AsyncStorage.getItem('favorites');
-            if (storedFavorites) {
-                setFavorites(JSON.parse(storedFavorites));
-            };
-        }
-        loadFavorites();
-    }, []);
-
-    const toggleLike = async () => {
-        setLiked(!liked);
-
-        const updatedFavorites = liked
-            ? favorites.filter((favorite) => favorite !== user.id)
-            : [...favorites, user];
-        setFavorites(updatedFavorites);
-        await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-    };
-
     return (
         <SafeAreaView style={styles.container}>
             <TouchableOpacity onPress={handleLogout} style={styles.logout}>
@@ -83,27 +89,32 @@ export default function HomePage() {
             <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
                 <Text style={styles.editButtonText}>MY PROFILE</Text>
             </TouchableOpacity>
+            {/* {userData && userData.photo ? (
+            <Image source={{ uri: userData.photo }} style={styles.userPhoto} />
+                ) : (
+                <Image source={require('../../assets/profile.png')} style={styles.userPhoto} />
+                )} */}
             <Image source={require('../../assets/profile.png')} style={styles.userPhoto} />
-            <Text style={[styles.userName, styles.userAge]}>{user.name} - {user.age}</Text>
+            <Text style={[styles.userName, styles.userAge]}>{userData?.name} - {userData?.age}</Text>
             <View style={styles.separator}></View>
             <Image source={require('../../assets/flag.png')} style={styles.userCountry} />
-            <Text style={styles.userCity}>{user.city}</Text>
-            <Text style={styles.userArrivalDate}>Arrival Date: {user.arrivalDate}</Text>
+            <Text style={styles.userCity}>{userData?.city}</Text>
+            <Text style={styles.userArrivalDate}>Arrival Date: {userData?.arrivalDate}</Text>
             <View style={styles.schoolContainer}>
                 <Text style={styles.userSchool}>School: </Text>
                 <TouchableOpacity onPress={handleNavigateToSchool}>
-                    <Text style={styles.linkText}>{user.school}</Text>
+                    <Text style={styles.linkText}>{userData?.school}</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.airlineContainer}>
                 <Text style={styles.userAirlines}>Airline: </Text>
                 <TouchableOpacity onPress={handleNavigateToAirline}>
-                    <Text style={styles.linkText}>{user.airlines}</Text>
+                    <Text style={styles.linkText}>{userData?.airlines}</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.separator2}></View>
-            <Text style={styles.userOriginCity}>{user.originCity}</Text>
-            <Text style={styles.userOriginCountry}>{user.originCountry}</Text>
+            <Text style={styles.userOriginCity}>{userData?.originCity}</Text>
+            <Text style={styles.userOriginCountry}>{userData?.originCountry}</Text>
             <TouchableOpacity onPress={openWhatsAppChat}>
                 <Image source={require('../../assets/whatsapp.png')} style={styles.whatsappLogo} />
             </TouchableOpacity>
@@ -268,7 +279,7 @@ const styles = {
         width: 50,
         height: 50,
         left: 100,
-        marginTop: 630,
+        top: 600,
     },
 };
 

@@ -27,8 +27,10 @@ const EditProfilePage = () => {
         name: "",
         birthdate: new Date(),
         destinationCity: "",
+        destinationCountry: "",
         dateArrival: "",
         originCity: "",
+        originCountry: "",
         whatsapp: "",
         school: [],
         airlines: "",
@@ -45,8 +47,10 @@ const EditProfilePage = () => {
                     Name: dataForm.name,
                     Birthdate: dataForm.birthdate.toISOString(),
                     Destination_city: dataForm.destinationCity,
+                    Destination_country: dataForm.destinationCountry,
                     Date_arrival: dataForm.dateArrival,
                     Origin_city: dataForm.originCity,
+                    Origin_country: dataForm.originCountry,
                     Whatsapp: `${dataForm.whatsapp}`,
                     School: dataForm.school,
                     Airlines: dataForm.airlines,
@@ -57,8 +61,10 @@ const EditProfilePage = () => {
                     Name: dataForm.name,
                     Birthdate: dataForm.birthdate.toISOString(),
                     Destination_city: dataForm.destinationCity,
+                    Destination_country: dataForm.destinationCountry,
                     Date_arrival: dataForm.dateArrival,
                     Origin_city: dataForm.originCity,
+                    Origin_country: dataForm.originCountry,
                     Whatsapp: `${dataForm.whatsapp}`,
                     School: dataForm.school,
                     Airlines: dataForm.airlines,
@@ -84,7 +90,7 @@ const EditProfilePage = () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
-            aspect: [4, 3],
+            aspect: [4, 4],
             quality: 1,
           });
       
@@ -167,6 +173,13 @@ const EditProfilePage = () => {
                     onChangeText={e => onChangeForm("destinationCity", e)}
                 />
 
+                <TextInput
+                    style={styles.input}
+                    placeholder="Destination Country"
+                    value={dataForm.destinationCountry}
+                    onChangeText={e => onChangeForm("destinationCountry", e)}
+                />
+
                 <TouchableOpacity 
                 style={[styles.input, styles.datePickerInput]} 
                 onPress={() => setShowDatePickerArrival(true)}
@@ -190,6 +203,13 @@ const EditProfilePage = () => {
                     placeholder="Origin City"
                     value={dataForm.originCity}
                     onChangeText={e => onChangeForm("originCity", e)}
+                />
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Origin Country"
+                    value={dataForm.originCountry}
+                    onChangeText={e => onChangeForm("originCountry", e)}
                 />
 
                 <TextInput
