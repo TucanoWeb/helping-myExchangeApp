@@ -111,15 +111,33 @@ const EditProfilePage = () => {
         onChangeForm("dateArrival", selectedDate || dataForm.dateArrival);
     };
 
-    // useEffect(() => {
-    //     const fetchSchools = async () => {
-    //         const querySnapshot = await getDocs(collection(db, "schools"));
-    //         const schoolsArray = querySnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().School }));
-    //         setSchool(schoolsArray);
-    //     };
-    
-    //     fetchSchools();
-    // }, []);
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                const userDoc = docSnap.data();
+                console.log("USERDOC Profile", userDoc)
+                setDataForm({
+                    Name: userDoc.name,
+                    Birthdate: userDoc.birthdate.toISOString(),
+                    Destination_city: userDoc.destinationCity,
+                    Destination_country: userDoc.destinationCountry,
+                    Date_arrival: userDoc.dateArrival,
+                    Origin_city: userDoc.originCity,
+                    Origin_country: userDoc.originCountry,
+                    Whatsapp: `${userDoc.whatsapp}`,
+                    School: userDoc.school,
+                    Airlines: userDoc.airlines,
+                    Photo: userDoc.photo,
+                });
+            } else {
+                console.log("No such document!");
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     const handleSelectSchool = (schoolName) => {
         setSelectedSchool(schoolName);
@@ -276,6 +294,7 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
+        top: 20,
     },
     input: {
         width: '100%',

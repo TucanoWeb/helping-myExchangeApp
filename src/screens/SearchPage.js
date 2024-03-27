@@ -1,57 +1,77 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Image, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { db } from '../config/firebase';
+import { db } from '../config/firebase'; // Garanta que db esteja sendo importado corretamente conforme mostrado anteriormente
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const SearchPage = ({ navigation }) => {
     const [searchText, setSearchText] = useState('');
-    const [filterType, setFilterType] = useState('users'); // users, schools, airlines
+    const [filterType, setFilterType] = useState(query(collection(db, "users"))); // Pode ser 'users', 'schools', ou 'airlines'
     const [searchResults, setSearchResults] = useState([]);
+    const [filter, setFilter] = useState([])
+
+    // const [query, setQuery] = useState(query(collection(db, "users")))
 
     const handleSearch = async () => {
-        let query = db.collection(filterType);
-
-        if (filterType === 'users' && searchText !== '') {
-            query = query.where('Name', '==', searchText);
-            query = query.where('DateArrival', '==', searchText);
-            query = query.where('Origin City', '==', searchText);
-            query = query.where('Destination City', '==', searchText);
+        if (searchText.trim() === '') {
+            setSearchResults([]);
+            return;
         }
 
-        if (filterType === 'schools' && searchText !== '') {
-            query = query.where('School', '==', searchText);
-            query = query.where('City', '==', searchText);
-            query = query.where('Country', '==', searchText);
-        }
-        
-        if (filterType === 'airlines' && searchText !== '') {
-            query = query.where('Airline', '==', searchText);
-        }
 
-        const querySnapshot = await query.get();
-        const results = [];
-        querySnapshot.forEach(doc => {
-            const data = doc.data();
-            results.push({
+    if(searchText !== ""){
+        setFilter(searchResults.filter(fil => fil.toLowerCase().includes(searchText.toLowerCase())))
+    }
+
+
+    // const queryFunc = (key) => {
+    //     setQuery(query(collection(db, key)))
+    // }
+
+        // let q = query(collection(db, "users"), where("Name", "==", searchText))
+
+        // switch (filterType) {
+        //     case 'users':
+        //         q = query(collection(db, "users"), where("Name", "==", searchText));
+        //         break;
+        //     case 'schools':
+        //         q = query(collection(db, "schools"), where("School", "==", searchText));
+        //         break;
+        //     case 'airlines':
+        //         q = query(collection(db, "airlines"), where("Airline", "==", searchText));
+        //         break;
+        //     default:
+        //         console.error('Filter type not supported');
+        //         return;
+        // }
+
+        try {
+            const querySnapshot = await getDocs(filterType);
+            const results = querySnapshot.docs.map(doc => ({
                 id: doc.id,
-                ...data,
-            });
-        });
-
-        setSearchResults(results);
+                ...doc.data(),
+            }));
+            setSearchResults(results);
+        } catch (error) {
+            console.error("Error searching: ", error);
+        }
     };
 
     const renderUserItem = ({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate('UserDetail', { userId: item.id })}>
+        <TouchableOpacity onPress={() => navigation.navigate('UserHome', { userId: item.id })}>
             <View style={styles.user}>
-                <Image source={require('../../assets/profile.png')} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
+                <Image
+                    source={item.Photo ? { uri: item.Photo } : require('../../assets/profile.png')}
+                    style={styles.imageStyle}
+                />
                 <View>
                     <Text>{item.Name}</Text>
-                    <Text>Origem: {item['Origin City']}</Text>
-                    <Text>Destino: {item['Destination City']}</Text>
+                    {item['Origin_city'] && <Text>Origin: {item['Origin_city']}</Text>}
+                    {item['Destination_city'] && <Text>Destination: {item['Destination_city']}</Text>}
                 </View>
             </View>
         </TouchableOpacity>
+        
     );
 
     return (
@@ -63,7 +83,7 @@ const SearchPage = ({ navigation }) => {
                     value={searchText}
                     onChangeText={setSearchText}
                 />
-                <TouchableOpacity onPress={handleSearch}>
+                <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
                     <Image source={require('../../assets/search.png')} style={styles.searchIcon} />
                 </TouchableOpacity>
             </View>
@@ -71,14 +91,15 @@ const SearchPage = ({ navigation }) => {
                 <Picker
                     selectedValue={filterType}
                     style={styles.pickerStyle}
-                    onValueChange={(itemValue) => setFilterType(itemValue)}>
+                    onValueChange={(itemValue) => setFilterType(query(collection(db, itemValue)))}
+                >
                     <Picker.Item label="Users" value="users" />
                     <Picker.Item label="Schools" value="schools" />
                     <Picker.Item label="Airlines" value="airlines" />
                 </Picker>
             </View>
             <FlatList
-                data={searchResults}
+                data={searchText === "" ? searchResults : filter}
                 renderItem={renderUserItem}
                 keyExtractor={(item) => item.id.toString()}
             />
@@ -89,17 +110,14 @@ const SearchPage = ({ navigation }) => {
 
 const Footer = ({ navigation }) => {
     const handleHomePage = () => {
-        // Navegar para a homepage
         navigation.navigate('Home');
     };
 
     const handleSearchPage = () => {
-        // Navegar para a página de busca
         navigation.navigate('Search');
     };
 
     const handleFavoritesPage = () => {
-        // Navegar para a página de favoritos
         navigation.navigate('Favorites');
     };
 
@@ -124,24 +142,25 @@ const Footer = ({ navigation }) => {
     );
 };
 
-const styles = {
+// Adicionei o StyleSheet para organizar melhor os estilos.
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#30FFAE',
-        paddingTop: 50, // Adicionado espaço no topo do contêiner
+        paddingTop: 50,
     },
     searchBarContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '90%', // Defina a largura com base no tamanho desejado
+        width: '90%',
     },
     pickerContainer: {
-        width: '40%', // Alinha a largura do picker com a barra de busca
-        marginTop: 10, // Adiciona um espaço entre a barra de busca e o picker
+        width: '40%',
+        marginTop: 10,
     },
     pickerStyle: {
-        width: '100%', // Faz o picker ocupar toda a largura do contêiner
+        width: '100%',
         height: 50,
         backgroundColor: '#fff',
         borderColor: 'black',
@@ -149,43 +168,41 @@ const styles = {
         borderRadius: 5,
     },
     input: {
-        flex: 1, // O input ocupa todo o espaço exceto o necessário para o ícone de busca
+        flex: 1,
         height: 50,
         borderColor: '#2B8B5D',
         borderWidth: 2,
         borderRadius: 15,
         paddingLeft: 15,
-        paddingRight: 50, // Adicionado espaço no final do input para o texto não sobrepor o ícone de busca
+        paddingRight: 50,
         fontSize: 15,
         backgroundColor: '#fff',
-        marginRight: 10, // Espaço entre o input e o ícone de busca
+        marginRight: 10,
     },
     searchIcon: {
+        position: 'absolute',
         width: 30,
         height: 30,
-        marginLeft: -50, // Posiciona o ícone de busca sobre o input
-    },
-    search: {
-        width: 20,
-        height: 20,
-        marginHorizontal: 5,
-        top: 30,
-    },
-    viewsearch: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+        right: 20,
+        top: -15,
     },
     user: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 20,
         padding: 10,
         width: 350,
         borderRadius: 10,
-        backgroundColor: '#30ff91',
+        backgroundColor: '#f0f0f0',
+        top: 20,
     },
-};
+    imageStyle: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginRight: 10,
+    },
+});
 
 const footerStyles = {
     container: {
@@ -215,5 +232,4 @@ const footerStyles = {
         opacity: 0.6,
     },
 };
-
 export default SearchPage;
